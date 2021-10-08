@@ -4,33 +4,40 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Start is called before the first frame update
-
-    private float h = 0f;
-    private float v = 0f;
-    private float r = 0f;
-
-    private Transform transform;
-    public float moveSpeed = 10.0f;
-
-    public float rotSpeed = 80.0f;
+    private float walkSpeed = 5.0f;
+    private float runSpeed = 10.0f;
+    private float jumpHeight;
+    private float rotateSpeed = 10.0f;
 
     void Start()
     {
-        transform = GetComponent<Transform>();        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        h = Input.GetAxis("Horizontal");
-        v = Input.GetAxis("Vertical");
-        r = Input.GetAxis("Mouse X");
+        Move();
+    }
 
-        Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
+    private void Move()
+    {
+        float xMove = Input.GetAxis("Horizontal");
+        float zMove = Input.GetAxis("Vertical");
+        Vector3 moveDir = new Vector3 (xMove, 0, zMove);
 
-        transform.Translate(Vector3.forward * moveSpeed * v * Time.deltaTime, Space.Self);
-
-        transform.Rotate(Vector3.up * rotSpeed * Time.deltaTime * h);
+        if (!(xMove == 0 && zMove == 0))    // 이동 후, 다시 정면을 바라보는 현상을 고치기 위함
+        {
+            if (Input.GetKey(KeyCode.LeftShift))    // 달리기
+            {
+                transform.position += moveDir * runSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * rotateSpeed);
+            }
+            else   // 걷기
+            {
+                transform.position += moveDir * walkSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * rotateSpeed);
+            }
+        }
     }
 }

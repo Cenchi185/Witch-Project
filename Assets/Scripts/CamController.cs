@@ -10,7 +10,7 @@ public class CamController : MonoBehaviour
 
     private float xmove = 0;  // X축 누적 이동량
     private float ymove = 0;  // Y축 누적 이동량
-    private float distance = 3; // 카메라와 캐릭터 거리
+    private float distance = 10; // 카메라와 캐릭터 거리
 
     private float zommSpeed = 10.0f;
 
@@ -26,7 +26,7 @@ public class CamController : MonoBehaviour
         distance -= Input.GetAxis("Mouse ScrollWheel") * zommSpeed * zoomSensivity;
         distance = Mathf.Clamp(distance, 3f, 10f);
 
-        Vector3 reverseDistance = new Vector3(0.0f, 0.0f, distance); // 이동량에 따른 Z 축방향의 벡터
+        Vector3 reverseDistance = new Vector3(0f, 0f, distance); // 이동량에 따른 Z 축방향의 벡터
         transform.position = player.transform.position - transform.rotation * reverseDistance; // 플레이어의 위치에서 카메라가 바라보는 방향에 벡터값을 적용한 상대 좌표를 차감
     }
 }
