@@ -19,11 +19,11 @@ public class CamController : MonoBehaviour
     {
         xmove += Input.GetAxis("Mouse X"); // 마우스의 좌우 이동
         ymove -= Input.GetAxis("Mouse Y"); // 마우스의 상하 이동
-        ymove = Mathf.Clamp(ymove, -90f, 90f);  // 카메라가 캐릭터를 넘어가 반전되지 않도록 회전각 조절
+        ymove = Mathf.Clamp(ymove, -89f, 89f);  // 카메라가 캐릭터를 넘어가 반전되지 않도록 회전각 조절, 완전 90도가 되면 Move기능에 문제가 생겨서 각을 1도 씩 뺌
 
         // 줌 부드럽게 하는방법 나중에 알아보기
         transform.rotation = Quaternion.Euler(ymove * moveSensivity, xmove * moveSensivity, 0); // 이동량에 따라 카메라의 바라보는 방향을 조정
-        distance -= Input.GetAxis("Mouse ScrollWheel") * zommSpeed * zoomSensivity;
+        distance -= Input.GetAxis("Mouse ScrollWheel") * zommSpeed * zoomSensivity;     // 카메라와 캐릭터 사이의 거리 조절
         distance = Mathf.Clamp(distance, 3f, 10f);
 
         Vector3 reverseDistance = new Vector3(0f, 0f, distance); // 이동량에 따른 Z 축방향의 벡터
