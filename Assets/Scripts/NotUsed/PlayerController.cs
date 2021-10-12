@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotateSpeed = 10.0f;
 
     // 상태 변수
-    private bool isGround = true;
+    private bool isGround;
 
     // 땅에 착지 여부
     private CapsuleCollider capsuleCollider;
@@ -29,9 +29,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        checkGround();
-        Move();
-        Jump();
+        if (isGround)
+        {
+            Jump();
+            Move();
+        }
+        Debug.Log(isGround);
     }
 
     private void Move() // 카메라 시야 기준으로 캐릭터 이동

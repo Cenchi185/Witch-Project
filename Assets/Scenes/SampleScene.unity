@@ -215,7 +215,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 69012862}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 1, y: 1, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 302068217}
@@ -239,6 +239,8 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 10
   finalSpeed: 0
+  jumpHeight: 5
+  gravity: 15
 --- !u!143 &69012868
 CharacterController:
   m_ObjectHideFlags: 0
@@ -250,12 +252,12 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
+  m_Height: 0.9
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_MinMoveDistance: 0.0001
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &302068216
 GameObject:
@@ -403,6 +405,7 @@ MonoBehaviour:
   realCamera: {fileID: 963194228}
   minDistance: 2
   maxDistance: 10
+  zoomSensitivity: 10
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

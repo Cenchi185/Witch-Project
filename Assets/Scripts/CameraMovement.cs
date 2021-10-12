@@ -16,11 +16,13 @@ public class CameraMovement : MonoBehaviour
     [SerializeField] private Transform realCamera;  // 실제 카메라의 위치
     [SerializeField] private float minDistance;     // 카메라와 캐릭터사이에 방해물이 있을 경우 캐릭터와 카메라간의 최소거리
     [SerializeField] private float maxDistance;     // 카메라와 캐릭터사이에 방해물이 있을 경우 캐릭터와 카메라간의 최대거리
+    [SerializeField] private float zoomSensitivity = 10f; // 카메라 줌 민감도
 
     private Vector3 dirNormalized; // 방향 벡터를 저장하는 변수
     private Vector3 finalDir;      // 최종적으로 정해진 방향
+    private float currentDistance = 10f; // 현재 거리
     private float finalDistance;   // 최종적으로 결정된 거리
-    private float smoothness = 10f;
+    private float smoothness = 2f;
 
     void Start()
     {
@@ -50,16 +52,21 @@ public class CameraMovement : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, objectFollow.position, followSpeed * Time.deltaTime); // objectFollow 의 좌표를 따라가도록 설정
 
         finalDir = transform.TransformPoint(dirNormalized * maxDistance);   // 카메라로부터 캐릭터까지의 방향 벡터
+        float wheelInput = Input.GetAxis("Mouse ScrollWheel") * zoomSensitivity;  // 마우스 휠 입력 올릴때 0.1 내릴때 -0.1 * zoomSensitivity 만큼
 
+        currentDistance -= wheelInput;  // 휠로 입력한 값만큼 + or -
+        currentDistance = Mathf.Clamp(currentDistance, minDistance, maxDistance);   // 최소거리와 최대 거리를 벗어나진 않도록 함
+        
         RaycastHit hit;
         if (Physics.Linecast(transform.position, finalDir, out hit))    // 카메라에서부터 finalDir 방향의 Ray에 방해물이 hit 되면
         {
-            finalDistance = Mathf.Clamp(hit.distance, minDistance, maxDistance);    // 카메라와 캐릭터간의 거리를 방해물의 거리에 맞춰 조절, 다만 최대, 최소값을 넘어가지 않음
+            finalDistance = Mathf.Clamp(hit.distance, minDistance, currentDistance);    // 카메라와 캐릭터간의 거리를 방해물의 거리에 맞춰 조절, 다만 최대, 최소값을 넘어가지 않음
         }
         else
         {
-            finalDistance = maxDistance;    // 부딫히는 물체가 없으면 최대 거리
+            finalDistance = currentDistance;    // 부딫히는 물체가 없으면 현재 설정된 거리
         }
+
         realCamera.localPosition = Vector3.Lerp(realCamera.localPosition, dirNormalized * finalDistance, Time.deltaTime * smoothness); // realCamera의 localPosition 으로부터 dirNormalized * finalDistance 만큼 떨어진 위치로, Time.deltaTime * smoothness 의 시간 안에 이동
     }
 }
