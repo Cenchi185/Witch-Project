@@ -19,7 +19,8 @@ public class PlayerMovement : MonoBehaviour
     // private bool toggleCameraRotation;     // 카메라 상태 전환
 
     private bool run;   // 뛰기상태 체크
-    private bool isGround = true; // 플레이어 위치 체크
+    [SerializeField] private bool isGround = true; // 플레이어 위치 체크
+    [SerializeField] private bool broom;   // 빗자루를 탄 상태인지 체크
     private float yVelocity;    // 캐릭터 점프 벡터 저장
 
     private float smoothness = 10f;
@@ -38,25 +39,34 @@ public class PlayerMovement : MonoBehaviour
     {
         // if (Input.GetKey(KeyCode.LeftAlt)) { toggleCameraRotation = true; } // 카메라 상태 변경
         // else { toggleCameraRotation = false; }
-        CheckGround();
+        CheckGround();  // 위치 체크
+        BroomRiding();
 
         if (Input.GetKey(KeyCode.LeftShift)) { run = true; }
         else { run = false; }
-        InputMovement();
+        InputMovement();    // 이동
 
-        if (isGround)  // 땅에 있을때만 점프 가능
+        #region 중력, 점프
+        if (isGround)  // 땅에 있을때만 점프
         {
-            yVelocity = 0f;     // 땅에 닿으면 yVelocity 값을 초기화, 안그러면 계속 중력이 커짐
-            if (Input.GetKeyDown(KeyCode.Space))    // 스페이스바를 눌렀을때
+            yVelocity = 0f;     // 땅에 닿으면 yVelocity 값을 초기화
+            if (Input.GetKeyDown(KeyCode.Space))
             {  
                 yVelocity = jumpHeight; // yVelocity 값을 높여서 점프
                 Jump();     // 점프 함수 호출
             }
         }
-        else    // 땅에 있는 상태가 아니라면 중력을 계속해서 받음
+        else if(!isGround && broom)   // 땅에 있는 상태가 아니고, 빗자루를 탄 상태라면
+        {
+            yVelocity -= gravity * Time.deltaTime;  
+            yVelocity = yVelocity * 0.98f; // 받는 중력을 감소 시킴
+        }
+        else // 땅에 있는 상태도 아니고, 빗자루를 탄상태도 아니라면
         {
             yVelocity -= gravity * Time.deltaTime;  // gravity를 양수로 설정했으므로 -함 
         }
+        #endregion 중력, 점프
+        Debug.Log(broom);
     }
 
     private void InputMovement()    // 카메라 기준 캐릭터 이동
@@ -87,14 +97,25 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log(isGround);
     }
 
-    private void Jump() // 점프 (점프가 자연스럽지 않은데 해결법 찾아보기)
+    private void Jump() // 점프
     {
         Vector3 jumpDir = new Vector3(0, jumpHeight, 0);    // 점프 높이
         _controller.Move(jumpDir * Time.deltaTime);         // 실제 캐릭터 점프
     }
 
-    private void BroomRiding()  // 빗자루를 타고 천천히 낙하
+    private void BroomRiding()
     {
-    
+        if (isGround)   // 땅에 있는 상태에선 빗자루 탑승 불가
+        {
+            broom = false;
+        }
+        else if (!isGround && !broom && Input.GetKeyDown(KeyCode.Space))    // 땅에 있지 않고, 빗자루 탑승상태도 아닐때, Space 입력
+        {
+            broom = true;
+        }
+        else if (!isGround && broom && Input.GetKeyDown(KeyCode.Space))     // 땅에 있지 않지만 빗자루 탑승상태 일때, Space 입력
+        {
+            broom = false;
+        }
     }
 }
