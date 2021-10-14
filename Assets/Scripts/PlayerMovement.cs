@@ -18,9 +18,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravity;         // 중력
     // private bool toggleCameraRotation;     // 카메라 상태 전환
 
+    private bool broomBlock = true;   // 낮은 높이에서는 빗자루를 못타도록 설정
     private bool run;   // 뛰기상태 체크
     [SerializeField] private bool isGround = true; // 플레이어 위치 체크
     [SerializeField] private bool broom;   // 빗자루를 탄 상태인지 체크
+
     private float yVelocity;    // 캐릭터 점프 벡터 저장
 
     private float smoothness = 10f;
@@ -66,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
             yVelocity -= gravity * Time.deltaTime;  // gravity를 양수로 설정했으므로 -함 
         }
         #endregion 중력, 점프
-        Debug.Log(broom);
+        // Debug.Log(broom);
     }
 
     private void InputMovement()    // 카메라 기준 캐릭터 이동
@@ -92,9 +94,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckGround()  // 땅에 있는지 체크
     {
-        Debug.DrawRay(transform.position, Vector3.down, Color.red, capsuleCollider.bounds.extents.y + 0.1f);    // 지상 방향으로 향하는 Ray 표시
+        // Debug.DrawRay(transform.position, Vector3.down, Color.red, capsuleCollider.bounds.extents.y + 0.1f);    // 지상 방향으로 향하는 Ray 표시
         isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);  // capsulecolider 의 절반 + 0.1f 만큼 아래로 향한 Ray 가 충돌했는지 안했는지 확인
-        Debug.Log(isGround);
+        // Debug.Log(isGround);
     }
 
     private void Jump() // 점프
@@ -105,7 +107,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void BroomRiding()
     {
-        if (isGround)   // 땅에 있는 상태에선 빗자루 탑승 불가
+        // Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue, 0.1f);    // 지상 방향으로 향하는 Ray 표시
+        broomBlock = Physics.Raycast(transform.position, Vector3.down, 2f);
+        // Debug.Log(broomBlock);
+
+        if (isGround || broomBlock)   // 땅에 있는 상태에선 빗자루 탑승 불가
         {
             broom = false;
         }
