@@ -41,34 +41,18 @@ public class PlayerMovement : MonoBehaviour
     {
         // if (Input.GetKey(KeyCode.LeftAlt)) { toggleCameraRotation = true; } // 카메라 상태 변경
         // else { toggleCameraRotation = false; }
-        CheckGround();  // 위치 체크
+        CheckGround();
+        Gravity();
         BroomRiding();
 
-        if (Input.GetKey(KeyCode.LeftShift)) { run = true; }
+        if (Input.GetKey(KeyCode.LeftShift) && !broom) { run = true; }  // 빗자루를 타는 중에는 달리기를 할 수 없음
         else { run = false; }
         InputMovement();    // 이동
+    }
 
-        #region 중력, 점프
-        if (isGround)  // 땅에 있을때만 점프
-        {
-            yVelocity = 0f;     // 땅에 닿으면 yVelocity 값을 초기화
-            if (Input.GetKeyDown(KeyCode.Space))
-            {  
-                yVelocity = jumpHeight; // yVelocity 값을 높여서 점프
-                Jump();     // 점프 함수 호출
-            }
-        }
-        else if(!isGround && broom)   // 땅에 있는 상태가 아니고, 빗자루를 탄 상태라면
-        {
-            yVelocity -= gravity * Time.deltaTime;  
-            yVelocity = yVelocity * 0.98f; // 받는 중력을 감소 시킴
-        }
-        else // 땅에 있는 상태도 아니고, 빗자루를 탄상태도 아니라면
-        {
-            yVelocity -= gravity * Time.deltaTime;  // gravity를 양수로 설정했으므로 -함 
-        }
-        #endregion 중력, 점프
-        // Debug.Log(broom);
+    private void FixedUpdate()
+    {
+        Debug.Log(_controller.isGrounded);
     }
 
     private void InputMovement()    // 카메라 기준 캐릭터 이동
@@ -94,9 +78,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckGround()  // 땅에 있는지 체크
     {
-        // Debug.DrawRay(transform.position, Vector3.down, Color.red, capsuleCollider.bounds.extents.y + 0.1f);    // 지상 방향으로 향하는 Ray 표시
-        isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);  // capsulecolider 의 절반 + 0.1f 만큼 아래로 향한 Ray 가 충돌했는지 안했는지 확인
-        // Debug.Log(isGround);
+        // Debug.DrawRay(transform.position, Vector3.down, Color.red, capsuleCollider.bounds.extents.y + 0.5f);    // 지상 방향으로 향하는 Ray 표시
+        if (Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f)) // capsulecolider 의 절반 + 0.1f 만큼 아래로 향한 Ray 가 충돌했는지 안했는지 확인
+        { isGround = true; }
+        else { isGround = false; }
     }
 
     private void Jump() // 점프
@@ -122,6 +107,28 @@ public class PlayerMovement : MonoBehaviour
         else if (!isGround && broom && Input.GetKeyDown(KeyCode.Space))     // 땅에 있지 않지만 빗자루 탑승상태 일때, Space 입력
         {
             broom = false;
+        }
+    }
+
+    private void Gravity()
+    {
+        if (isGround)  // 땅에 있을때만 점프
+        {
+            yVelocity = 0f;     // 땅에 닿으면 yVelocity 값을 초기화
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                yVelocity = jumpHeight; // yVelocity 값을 높여서 점프
+                Jump();     // 점프 함수 호출
+            }
+        }
+        else if (!isGround && broom)   // 땅에 있는 상태가 아니고, 빗자루를 탄 상태라면
+        {
+            yVelocity -= gravity * Time.deltaTime;
+            yVelocity = yVelocity * 0.98f; // 받는 중력을 감소 시킴
+        }
+        else // 땅에 있는 상태도 아니고, 빗자루를 탄상태도 아니라면
+        {
+            yVelocity -= gravity * Time.deltaTime;  // gravity를 양수로 설정했으므로 -함 
         }
     }
 }
