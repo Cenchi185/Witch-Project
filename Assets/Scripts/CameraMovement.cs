@@ -32,8 +32,8 @@ public class CameraMovement : MonoBehaviour
         dirNormalized = realCamera.localPosition.normalized; // normalized를 사용하면 벡터의 방향만 남길 수 있음 
         finalDistance = realCamera.localPosition.magnitude;  // magnitude 를 사용하면 벡터의 크기만 남길 수 있음 
 
-        Cursor.lockState = CursorLockMode.Locked;   // 커서를 화면 중앙에 고정시킴
-        Cursor.visible = false; // 커서가 보이지 않도록 가림
+        // Cursor.lockState = CursorLockMode.Locked;   // 커서를 화면 중앙에 고정시킴
+        // Cursor.visible = false; // 커서가 보이지 않도록 가림
     }
 
     // Update is called once per frame

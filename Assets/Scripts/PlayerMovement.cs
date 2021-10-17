@@ -8,24 +8,26 @@ public class PlayerMovement : MonoBehaviour
     Camera _camera;         
     CharacterController _controller;
     Collider capsuleCollider;
-    [SerializeField] Transform followCam;
+    [SerializeField] Transform followCam;   // 카메라 초점
+    [SerializeField] Transform secondRay;   // 오르막길, 내리막길 판단을 위한 두번째 ray의 시작점
 
-    // 캐릭터 내부 변수, 변수값이 설정되어 있지 않으면 인스펙터에서 조정한 것
+    // 캐릭터 내부 변수
+    // private bool toggleCameraRotation;     // 카메라 상태 전환
     [SerializeField] private float walkSpeed = 5f;  // 걷기 속도
     [SerializeField] private float runSpeed = 10f;  // 뛰기 속도
-    [SerializeField] private float finalSpeed;      // 걷기, 뛰기중 하나의 속도
-    [SerializeField] private float jumpHeight;      // 점프 높이
-    [SerializeField] private float gravity;         // 중력
-    // private bool toggleCameraRotation;     // 카메라 상태 전환
-
-    private bool broomBlock = true;   // 낮은 높이에서는 빗자루를 못타도록 설정
-    private bool run;   // 뛰기상태 체크
+    [SerializeField] private float jumpHeight = 5f;      // 점프 높이
+    [SerializeField] private float gravity = 20f;         // 중력
     [SerializeField] private bool isGround = true; // 플레이어 위치 체크
     [SerializeField] private bool broom;   // 빗자루를 탄 상태인지 체크
 
-    private float yVelocity;    // 캐릭터 점프 벡터 저장
+    private bool broomBlock = true;   // 낮은 높이에서는 빗자루를 못타도록 설정
+    private bool run;   // 뛰기상태 체크
 
+    private float finalSpeed;   // 걷기, 뛰기 속도 결정
+    private float yVelocity;    // 캐릭터 점프 벡터 저장
     private float smoothness = 10f;
+
+    Vector3 moveDir;    // 캐릭터 이동 방향
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
         _camera = Camera.main;  // 메인 카메라 사용
         _controller = this.GetComponent<CharacterController>();
         capsuleCollider = this.GetComponent<CapsuleCollider>();
+        moveDir = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -43,16 +46,12 @@ public class PlayerMovement : MonoBehaviour
         // else { toggleCameraRotation = false; }
         CheckGround();
         Gravity();
+
         BroomRiding();
 
         if (Input.GetKey(KeyCode.LeftShift) && !broom) { run = true; }  // 빗자루를 타는 중에는 달리기를 할 수 없음
         else { run = false; }
         InputMovement();    // 이동
-    }
-
-    private void FixedUpdate()
-    {
-        Debug.Log(_controller.isGrounded);
     }
 
     private void InputMovement()    // 카메라 기준 캐릭터 이동
@@ -64,24 +63,29 @@ public class PlayerMovement : MonoBehaviour
         Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));    // 캐릭터 이동방향 입력
         Vector3 lookFoward = new Vector3(transform.position.x - _camera.transform.position.x, 0f, transform.position.z - _camera.transform.position.z).normalized;    // 캐릭터가 움직일 정면벡터
         Vector3 lookRight = new Vector3(_camera.transform.right.x, 0f, _camera.transform.right.z).normalized; // 캐릭터가 움직일 좌, 우 벡터
-        Vector3 moveDir = (lookFoward * moveInput.y + lookRight * moveInput.x) * finalSpeed;   // 캐릭터의 이동방향 결정
+        moveDir = (lookFoward * moveInput.y + lookRight * moveInput.x).normalized * finalSpeed;   // 캐릭터의 이동방향 결정, normalized 해주지 않으면 대각선 이동이 비정상적으로 빠름
 
-        if (!(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0))    // 이동 후, 다시 정면을 바라보는 현상을 고치기 위함
+        if (!(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0))    // 이동 후, 다시 정면을 바라보는 현상을 고침
         {
             transform.forward = moveDir;    // 정면 방향을 moveDir 로 설정
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * smoothness);    // 이동하는 방향 바라봄
         }
 
-        moveDir.y = yVelocity; // 캐릭터가 받을 중력 계산
+        moveDir.y = yVelocity;
         _controller.Move(moveDir * Time.deltaTime); // Move 를 사용하여 캐릭터 움직임
     }
 
     private void CheckGround()  // 땅에 있는지 체크
     {
         // Debug.DrawRay(transform.position, Vector3.down, Color.red, capsuleCollider.bounds.extents.y + 0.5f);    // 지상 방향으로 향하는 Ray 표시
-        if (Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f)) // capsulecolider 의 절반 + 0.1f 만큼 아래로 향한 Ray 가 충돌했는지 안했는지 확인
-        { isGround = true; }
-        else { isGround = false; }
+        if (Physics.Raycast(transform.position, Vector3.down ,capsuleCollider.bounds.extents.y + 0.1f) || _controller.isGrounded) // capsulecolider 의 절반 + 0.1f 만큼 아래로 향한 Ray 가 충돌했는지 안했는지 확인
+        {
+            isGround = true;
+        }
+        else 
+        {
+            isGround = false;
+        }
     }
 
     private void Jump() // 점프
@@ -114,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGround)  // 땅에 있을때만 점프
         {
-            yVelocity = 0f;     // 땅에 닿으면 yVelocity 값을 초기화
+            yVelocity = -10f;   // 항상 일정 이상의 중력을 받도록 설정(오르막길, 내리막길 오르내릴때 통통 튀는 현상 방지)
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 yVelocity = jumpHeight; // yVelocity 값을 높여서 점프
