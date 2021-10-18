@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4279043685530570460}
   - component: {fileID: 5078979786641941467}
   - component: {fileID: 1147329619519478324}
+  - component: {fileID: 8427261994538543564}
   m_Layer: 0
   m_Name: Thorw Object
   m_TagString: Untagged
@@ -112,3 +113,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8427261994538543564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4597247536594754769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 014378b0f3a116b47b07f09e30df3104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  item: {fileID: 11400000, guid: 4dc16687d720c4f419d3f0e8b60068c2, type: 2}

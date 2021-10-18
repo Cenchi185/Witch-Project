@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     // private bool toggleCameraRotation;     // 카메라 상태 전환
     [SerializeField] private float walkSpeed = 5f;  // 걷기 속도
     [SerializeField] private float runSpeed = 10f;  // 뛰기 속도
-    [SerializeField] private float jumpHeight = 5f;      // 점프 높이
+    [SerializeField] private float jumpHeight = 15f;      // 점프 높이
     [SerializeField] private float gravity = 20f;         // 중력
     [SerializeField] private bool isGround = true; // 플레이어 위치 체크
     [SerializeField] private bool broom;   // 빗자루를 탄 상태인지 체크
@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
     private void BroomRiding()
     {
         // Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue, 0.1f);    // 지상 방향으로 향하는 Ray 표시
-        broomBlock = Physics.Raycast(transform.position, Vector3.down, 2f);
+        broomBlock = Physics.Raycast(transform.position, Vector3.down, 2f); // 너무 낮은 높이에서 빗자루를 탑승 할 수 없도록하는 Raycast
         // Debug.Log(broomBlock);
 
         if (isGround || broomBlock)   // 땅에 있는 상태에선 빗자루 탑승 불가
@@ -121,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
             yVelocity = -10f;   // 항상 일정 이상의 중력을 받도록 설정(오르막길, 내리막길 오르내릴때 통통 튀는 현상 방지)
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                yVelocity = jumpHeight; // yVelocity 값을 높여서 점프
+                yVelocity += jumpHeight; // yVelocity 값을 높여서 점프
                 Jump();     // 점프 함수 호출
             }
         }
