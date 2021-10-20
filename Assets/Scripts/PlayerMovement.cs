@@ -9,7 +9,6 @@ public class PlayerMovement : MonoBehaviour
     CharacterController _controller;
     Collider capsuleCollider;
     [SerializeField] Transform followCam;   // 카메라 초점
-    [SerializeField] Transform secondRay;   // 오르막길, 내리막길 판단을 위한 두번째 ray의 시작점
 
     // 캐릭터 내부 변수
     // private bool toggleCameraRotation;     // 카메라 상태 전환
@@ -94,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         _controller.Move(jumpDir * Time.deltaTime);         // 실제 캐릭터 점프
     }
 
-    private void BroomRiding()
+    private void BroomRiding()  // 빗자루 탑승 판단 함수
     {
         // Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue, 0.1f);    // 지상 방향으로 향하는 Ray 표시
         broomBlock = Physics.Raycast(transform.position, Vector3.down, 3f); // 너무 낮은 높이에서 빗자루를 탑승 할 수 없도록하는 Raycast
@@ -114,7 +113,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Gravity()
+    private void Gravity()  // 캐릭터 중력 함수
     {
         if (isGround)  // 땅에 있을때만 점프
         {
