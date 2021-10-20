@@ -8,9 +8,11 @@ using TMPro;
 public class PlayerActionController : MonoBehaviour
 {
     [SerializeField] private float range; // 아이템 습득 최대 거리
+    [SerializeField] private InventoryUI inventory; // 플레이어의 인벤토리
 
     private bool pickUpActivated = false; // 아이템 습득 가능 여부 
     private Collider[] pickItem;          // 충돌체 정보 저장
+    // RaycastHit hit;
 
     [SerializeField] private LayerMask layerMask; // 특정 레이어를 가진 오브젝트만 인지하도록
     [SerializeField] private TextMeshProUGUI actionText;     // 플레이어가 취할 행동을 표시할 텍스트
@@ -27,7 +29,7 @@ public class PlayerActionController : MonoBehaviour
     private void CheckItem()    // 주울 수 있는 아이템이 주변에 있는지 체크
     {
         pickItem = Physics.OverlapSphere(transform.position, range, layerMask); // 플레이어 주변 range 만큼에 지정한 layerMask 가 있으면 그 정보를 pickItem 에 저장
-                                                                                // 배열 저장 순서는 플레이어에서 가까운 아이템 순서
+                                                                                // 배열 저장 순서는 먼저 감지된 아이템 순서 > 가까운 아이템
         if (pickItem != null && pickItem.Length > 0)   // pickItem 의 정보가 있으면
         {
             #region 디버그 용
@@ -39,6 +41,7 @@ public class PlayerActionController : MonoBehaviour
             */
             #endregion
             ShowIteminfo(); // 해당 정보를 출력
+            // Physics.Raycast(transform.position, transform.position - pickItem[0].transform.position, out hit);
         }
         else 
         {
@@ -64,7 +67,8 @@ public class PlayerActionController : MonoBehaviour
         if (pickUpActivated)    // 아이템을 주울 수 있는 상태면
         {
             Debug.Log(pickItem[0].name + " 획득");
-            Destroy(pickItem[0].gameObject);
+            inventory.PickUpItem_Add(pickItem[0].GetComponent<ItemPickup>().item);
+            Destroy(pickItem[0].gameObject);    // 주운 아이템이 월드에서 없어지도록 함
         }
     }
 }

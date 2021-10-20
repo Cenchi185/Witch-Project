@@ -13,10 +13,10 @@ public class PlayerMovement : MonoBehaviour
 
     // 캐릭터 내부 변수
     // private bool toggleCameraRotation;     // 카메라 상태 전환
-    [SerializeField] private float walkSpeed = 5f;  // 걷기 속도
-    [SerializeField] private float runSpeed = 10f;  // 뛰기 속도
-    [SerializeField] private float jumpHeight = 15f;      // 점프 높이
-    [SerializeField] private float gravity = 20f;         // 중력
+    private float walkSpeed = 5f;  // 걷기 속도
+    private float runSpeed = 10f;  // 뛰기 속도
+    private float jumpHeight = 15f;      // 점프 높이
+    private float gravity = 20f;         // 중력
     [SerializeField] private bool isGround = true; // 플레이어 위치 체크
     [SerializeField] private bool broom;   // 빗자루를 탄 상태인지 체크
 
@@ -36,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
         _camera = Camera.main;  // 메인 카메라 사용
         _controller = this.GetComponent<CharacterController>();
         capsuleCollider = this.GetComponent<CapsuleCollider>();
-        moveDir = Vector3.zero;
+        moveDir = Vector3.zero; // 초기화
     }
 
     // Update is called once per frame
@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
     private void BroomRiding()
     {
         // Debug.DrawRay(transform.position, Vector3.down * 2f, Color.blue, 0.1f);    // 지상 방향으로 향하는 Ray 표시
-        broomBlock = Physics.Raycast(transform.position, Vector3.down, 2f); // 너무 낮은 높이에서 빗자루를 탑승 할 수 없도록하는 Raycast
+        broomBlock = Physics.Raycast(transform.position, Vector3.down, 3f); // 너무 낮은 높이에서 빗자루를 탑승 할 수 없도록하는 Raycast
         // Debug.Log(broomBlock);
 
         if (isGround || broomBlock)   // 땅에 있는 상태에선 빗자루 탑승 불가
