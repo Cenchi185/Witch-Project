@@ -43,7 +43,7 @@ public class InventoryUI : MonoBehaviour
                 {
                     if (slots[i].item.itemName == _item.itemName)   // i번째 슬롯의 이름이 같다면
                     {
-                        slots[i].setSlotCount(_count);  // 갯수 증가
+                        slots[i].SetSlotCount(_count);  // 갯수 증가
                         return;
                     }
                 }

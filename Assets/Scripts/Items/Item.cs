@@ -8,7 +8,7 @@ public class Item : ScriptableObject    // ScripteableObject = 데이터 컨테이너 �
     public enum ItemType    // enum은 열거형 데이터, 따로 선언하지 않으면 순서대로 0부터 +1 되는 값들을 가진다.
     {
         Equipment,
-        Conmsumables,
+        Consumables,
         Ingredient,
         Etc
     }
