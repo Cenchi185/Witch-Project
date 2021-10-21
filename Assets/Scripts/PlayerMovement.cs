@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,12 +9,14 @@ public class PlayerMovement : MonoBehaviour
     Camera _camera;         
     CharacterController _controller;
     Collider capsuleCollider;
+    StatusController state;
     [SerializeField] Transform followCam;   // 카메라 초점
 
     // 캐릭터 내부 변수
     // private bool toggleCameraRotation;     // 카메라 상태 전환
     private float walkSpeed = 5f;  // 걷기 속도
     private float runSpeed = 10f;  // 뛰기 속도
+    private float broomSpeed = 8f;  // 빗자루 탑승시 속도
     private float jumpHeight = 15f;      // 점프 높이
     private float gravity = 20f;         // 중력
     [SerializeField] private bool isGround = true; // 플레이어 위치 체크
@@ -36,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
         _controller = this.GetComponent<CharacterController>();
         capsuleCollider = this.GetComponent<CapsuleCollider>();
         moveDir = Vector3.zero; // 초기화
+        state = FindObjectOfType<StatusController>();
     }
 
     // Update is called once per frame
@@ -47,15 +51,24 @@ public class PlayerMovement : MonoBehaviour
         Gravity();
 
         BroomRiding();
-
-        if (Input.GetKey(KeyCode.LeftShift) && !broom) { run = true; }  // 빗자루를 타는 중에는 달리기를 할 수 없음
+        if (Input.GetKey(KeyCode.LeftShift) && !broom && state.GetcurrnetST() > 0) // 스태미나가 다 닳으면 달리기를 할 수 없음
+        { run = true; }
         else { run = false; }
+
         InputMovement();    // 이동
     }
 
+    #region 게터
+    public bool Getbroom() { return broom; }
+
+    public bool Getrun() { return run; }
+    #endregion
+
     private void InputMovement()    // 카메라 기준 캐릭터 이동
     {
-        finalSpeed = (run) ? runSpeed : walkSpeed;
+        if (run) { finalSpeed = runSpeed; }
+        else if (broom) { finalSpeed = broomSpeed; }
+        else { finalSpeed = walkSpeed; }
 
         Debug.DrawRay(followCam.position, new Vector3(transform.position.x - _camera.transform.position.x, 0f, transform.position.z - _camera.transform.position.z).normalized, Color.red);   // 카메라의 정면 벡터 구해서 씬에 표시
 
@@ -99,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
         broomBlock = Physics.Raycast(transform.position, Vector3.down, 3f); // 너무 낮은 높이에서 빗자루를 탑승 할 수 없도록하는 Raycast
         // Debug.Log(broomBlock);
 
-        if (isGround || broomBlock)   // 땅에 있는 상태에선 빗자루 탑승 불가
+        if (isGround || broomBlock || state.GetcurrnetST() <= 0)   // 땅에 있는 상태, 스태미나가 없는 상태에서는 탑승 불가
         {
             broom = false;
         }

@@ -14,6 +14,7 @@ public class PlayerActionController : MonoBehaviour
     private Collider[] pickItem;          // 충돌체 정보 저장
 
     [SerializeField] private LayerMask layerMask; // 특정 레이어를 가진 오브젝트만 인지하도록
+    [SerializeField] private GameObject itemInfoBar;    // actionText 가 표시될 배경
     [SerializeField] private TextMeshProUGUI actionText;     // 플레이어가 취할 행동을 표시할 텍스트
 
     void Update()
@@ -52,6 +53,8 @@ public class PlayerActionController : MonoBehaviour
     {
         pickUpActivated = true;
         actionText.gameObject.SetActive(true);
+        itemInfoBar.SetActive(true);
+
         actionText.text = pickItem[0].GetComponent<ItemPickup>().item.name + " 줍기";  // 0번 인덱스에 저장된 아이템 부터 표시(주움)
     }
 
@@ -59,6 +62,7 @@ public class PlayerActionController : MonoBehaviour
     {
         pickUpActivated = false;
         actionText.gameObject.SetActive(false); // 표시된 pickItem UI 안보이게 변경
+        itemInfoBar.SetActive(false);
     }
 
     private void PickUp()   // 아이템 줍기
