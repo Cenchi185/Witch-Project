@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private float walkSpeed = 5f;  // 걷기 속도
     private float runSpeed = 10f;  // 뛰기 속도
     private float broomSpeed = 8f;  // 빗자루 탑승시 속도
-    private float jumpHeight = 15f;      // 점프 높이
+    private float jumpHeight = 17f;      // 점프 높이
     private float gravity = 20f;         // 중력
     [SerializeField] private bool isGround = true; // 플레이어 위치 체크
     [SerializeField] private bool broom;   // 빗자루를 탄 상태인지 체크
