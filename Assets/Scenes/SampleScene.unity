@@ -378,7 +378,6 @@ MonoBehaviour:
   itemInfoBar: {fileID: 336521290}
   actionText: {fileID: 991660815}
   talkManager: {fileID: 522931527}
-  npcTalkPanel: {fileID: 881543469}
 --- !u!1001 &85119148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2222,6 +2221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chatNPC_Panel: {fileID: 881543469}
+  talkPanel: {fileID: 2029294977}
 --- !u!1001 &525588089
 PrefabInstance:
   m_ObjectHideFlags: 0
